@@ -1,19 +1,16 @@
 package de.codecentric.totiblogpost.blogpost
 
-import de.codecentric.totiblogpost.catfact.CatFactService
 import org.springframework.stereotype.Service
 
 @Service
-class BlogPostService(val catFactService: CatFactService) {
+class BlogPostService(var blogPostRepository: BlogPostRepository) {
 
-
-    fun allBlogPosts() : List<BlogPost> {
-
+    fun allBlogPosts(): List<BlogPost> {
+        return blogPostRepository.findAll()
     }
 
-    fun blogPostById(id: Long) : BlogPost {
-        val randomFact= catFactService.randomCatFact()
-
+    fun blogPostById(id: Long): BlogPost {
+        return blogPostRepository.findById(id)
     }
 
 }

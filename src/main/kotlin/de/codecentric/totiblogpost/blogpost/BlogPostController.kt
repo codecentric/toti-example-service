@@ -10,17 +10,14 @@ class BlogPostController(val blogPostService: BlogPostService, val catFactServic
 
     @GetMapping("/blogposts")
     fun getAllBlogPosts(): BlogPostDto {
-
+        TODO()
     }
 
     @GetMapping("/blogpost/{id}")
     fun getAllBlogPosts(@PathVariable id: Long): BlogPostDto {
         val blogPost = blogPostService.blogPostById(id)
-        val catFact= catFactService.randomCatFact()
+        val catFact = catFactService.randomCatFact()
 
-        return BlogPostDto.from(blogPost, listOf(catFact))
-
-
+        return BlogPostDto.from(blogPost, listOfNotNull(catFact))
     }
-
 }

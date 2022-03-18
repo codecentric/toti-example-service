@@ -14,11 +14,12 @@ class BlogPostRepository(private val enhancedClient: DynamoDbEnhancedClient) {
     private val blogPostTableName = "table_name"
 
     fun findById(id: Long): BlogPost =
-       BlogPost.from(blogPostTable().getItem(Key.builder().partitionValue(id).build())) ?: throw BlogPostNotFoundException()
+        BlogPost.from(blogPostTable().getItem(Key.builder().partitionValue(id).build())) ?: throw BlogPostNotFoundException()
 
-
-    fun findAll(): List<BlogPostEntry> =
-        blogPostTable().scan().items().stream().toList()
+    fun findAll(): List<BlogPost> =
+        blogPostTable().scan().items().mapNotNull {
+            BlogPost.from(it)
+        }.toList()
 
     fun put(blogPost: BlogPostEntry) = blogPostTable().putItem(blogPost)
 
