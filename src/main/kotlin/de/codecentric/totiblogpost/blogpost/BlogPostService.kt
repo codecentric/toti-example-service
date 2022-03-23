@@ -10,7 +10,12 @@ class BlogPostService(var blogPostRepository: BlogPostRepository) {
     }
 
     fun blogPostById(id: Long): BlogPost {
-        return blogPostRepository.findById(id)
+        return blogPostRepository.findById(id = id)
+    }
+
+    fun putBlogPost(id: Long, title: String, content: String?): BlogPost? {
+        val blogPostEntry = blogPostRepository.put(BlogPostRepository.BlogPostEntry(id = id, title = title, content = content))
+        return BlogPost.from(blogPostEntry)
     }
 
 }
