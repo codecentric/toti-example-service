@@ -14,22 +14,28 @@ import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest
 class BlogPostRepository(private val enhancedClient: DynamoDbEnhancedClient) {
     private val blogPostTableName = "table_name"
 
-    fun findById(id: Long): BlogPost =
-        BlogPost.from(blogPostTable().getItem(Key.builder().partitionValue(id).build())) ?: throw BlogPostNotFoundException()
+    fun findById(id: Long): BlogPost = BlogPost.from(blogPostTable().getItem(Key.builder().partitionValue(id).build()))
+        ?: throw BlogPostNotFoundException()
 
-    fun findAll(): List<BlogPost> =
-        blogPostTable().scan().items().mapNotNull {
-            BlogPost.from(it)
-        }.toList()
+    fun findAll(): List<BlogPost> = blogPostTable().scan().items().mapNotNull {
+        BlogPost.from(it)
+    }.toList()
 
-    fun put(blogPost: BlogPostEntry): BlogPostEntry =
-        blogPostTable().putItemWithResponse(PutItemEnhancedRequest.builder(BlogPostEntry::class.java).item(blogPost).build()).attributes()
+    fun put(id: Long, title: String, content: String?): BlogPost {
+        //blogPostTable().putItemWithResponse()
+
+       blogPostTable().putItem(
+            PutItemEnhancedRequest.builder(BlogPostEntry::class.java).item(BlogPostEntry(id = id, title = title, content = content)).build()
+        )
+        val a = findById(id = id)
+
+        return a
+    }
 
     fun delete(siteId: String): BlogPostEntry? =
         blogPostTable().deleteItem(Key.builder().partitionValue(siteId).build())
 
-    fun blogPostTable(): DynamoDbTable<BlogPostEntry> =
-        enhancedClient.table(blogPostTableName, getTableSchema())
+    fun blogPostTable(): DynamoDbTable<BlogPostEntry> = enhancedClient.table(blogPostTableName, getTableSchema())
 
     private fun getTableSchema(): BeanTableSchema<BlogPostEntry> = TableSchema.fromBean(BlogPostEntry::class.java)
 

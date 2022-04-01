@@ -36,6 +36,23 @@ class BlogPostIntegrationTest {
             .headers { headers -> headers.contentType = MediaType.APPLICATION_JSON }
             .exchange()
 
+        rest.webTestClient.put()
+            .uri { uriBuilder ->
+                uriBuilder.path("/blogpost/{id}")
+                    .build(id)
+            }.bodyValue(
+                """
+                {
+                   "id": $id,
+                   "title": "some title",
+                   "content": "the content"
+                }
+            """.trimIndent()
+            )
+            .headers { headers -> headers.contentType = MediaType.APPLICATION_JSON }
+            .exchange()
+
+
         rest.webTestClient.get()
             .uri { uriBuilder ->
                 uriBuilder

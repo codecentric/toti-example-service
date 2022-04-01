@@ -1,5 +1,7 @@
 package de.codecentric.totiblogpost.blogpost
 
+import de.codecentric.totiblogpost.blogpost.dto.BlogPostRequest
+import de.codecentric.totiblogpost.blogpost.dto.BlogPostResponse
 import de.codecentric.totiblogpost.catfact.CatFactService
 import org.springframework.web.bind.annotation.*
 
@@ -7,20 +9,20 @@ import org.springframework.web.bind.annotation.*
 class BlogPostController(val blogPostService: BlogPostService, val catFactService: CatFactService) {
 
     @GetMapping("/blogposts")
-    fun allBlogPosts(): BlogPostDto {
+    fun allBlogPosts(): BlogPostResponse {
         TODO()
     }
 
     @GetMapping("/blogpost/{id}")
-    fun blogPost(@PathVariable id: Long): BlogPostDto {
+    fun blogPost(@PathVariable id: Long): BlogPostResponse {
         val blogPost = blogPostService.blogPostById(id)
-        val catFact = catFactService.randomCatFact()
+        //  val catFact = catFactService.randomCatFact()
 
-        return BlogPostDto.from(blogPost, listOfNotNull(catFact))
+        return BlogPostResponse.from(blogPost = blogPost) // , listOfNotNull(catFact)
     }
 
     @PutMapping("/blogpost/{id}")
-    fun createOrReplaceBlogPost(@PathVariable id: Long, @RequestBody blogPostDto: BlogPostDto): BlogPost? {
-        return blogPostService.putBlogPost(id = id, title = blogPostDto.title, content = blogPostDto.content)
+    fun createOrReplaceBlogPost(@PathVariable id: Long, @RequestBody blogPostRequest: BlogPostRequest): BlogPost {
+        return blogPostService.putBlogPost(id = id, title = blogPostRequest.title, content = blogPostRequest.content)
     }
 }
