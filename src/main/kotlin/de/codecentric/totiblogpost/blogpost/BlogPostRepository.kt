@@ -8,7 +8,6 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import software.amazon.awssdk.enhanced.dynamodb.mapper.BeanTableSchema
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey
-import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest
 
 @Repository
 class BlogPostRepository(private val enhancedClient: DynamoDbEnhancedClient) {
@@ -22,18 +21,13 @@ class BlogPostRepository(private val enhancedClient: DynamoDbEnhancedClient) {
     }.toList()
 
     fun put(id: Long, title: String, content: String?): BlogPost {
-        //blogPostTable().putItemWithResponse()
+        blogPostTable().putItem(BlogPostEntry(id = id, title = title, content = content))
 
-       blogPostTable().putItem(
-            PutItemEnhancedRequest.builder(BlogPostEntry::class.java).item(BlogPostEntry(id = id, title = title, content = content)).build()
-        )
-        val a = findById(id = id)
-
-        return a
+        return findById(id = id)
     }
 
-    fun delete(siteId: String): BlogPostEntry? =
-        blogPostTable().deleteItem(Key.builder().partitionValue(siteId).build())
+    fun delete(id: Long): BlogPostEntry? =
+        blogPostTable().deleteItem(Key.builder().partitionValue(id).build())
 
     fun blogPostTable(): DynamoDbTable<BlogPostEntry> = enhancedClient.table(blogPostTableName, getTableSchema())
 
