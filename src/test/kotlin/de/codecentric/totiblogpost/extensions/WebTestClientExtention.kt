@@ -19,6 +19,4 @@ class WebTestClientExtention : BeforeAllCallback {
             .responseTimeout(Duration.ofMillis(30000))
             .build()
     }
-
-
 }
