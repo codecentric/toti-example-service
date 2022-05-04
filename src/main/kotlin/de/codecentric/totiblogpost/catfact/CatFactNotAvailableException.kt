@@ -1,3 +1,3 @@
 package de.codecentric.totiblogpost.catfact
 
-class CatFactNotAvailableException : Exception()
+class CatFactNotAvailableException(message: String? = null) : Exception(message)

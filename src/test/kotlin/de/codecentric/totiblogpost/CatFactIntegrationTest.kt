@@ -39,6 +39,57 @@ class CatFactIntegrationTest {
                 }
             """.trimIndent()
             )
+    }
 
+    @Test
+    fun `should return 5 cat facts`() {
+        val catFact = "this is my catfact"
+        catFactExtension.givenACatFact(catFact = catFact)
+        rest.webTestClient.get()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/catfacts")
+                    .queryParam("count", 5)
+                    .build()
+            }
+            .exchange()
+            .expectStatus().is2xxSuccessful
+            .expectBody()
+            .jsonPath("$.catFacts.length()").isEqualTo(5)
+            .jsonPath("$.catFacts[1].fact").isEqualTo(catFact)
+    }
+
+    @Test
+    internal fun `should handle error`() {
+        val catFact = "this is my catfact"
+        catFactExtension.givenACatFact(catFact = catFact, status = 500)
+        rest.webTestClient.get()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/catfacts")
+                    .queryParam("count", 5)
+                    .build()
+            }
+            .exchange()
+            .expectStatus().is5xxServerError
+            .expectBody()
+            .jsonPath("$.message").isEqualTo("CatFact Service is not available.")
+    }
+
+    @Test
+    internal fun `should handle empty response`() {
+        val catFact = "this is my catfact"
+        catFactExtension.givenAnEmptyCatFactResponse()
+        rest.webTestClient.get()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/catfacts")
+                    .queryParam("count", 5)
+                    .build()
+            }
+            .exchange()
+            .expectStatus().is5xxServerError
+            .expectBody()
+            .jsonPath("$.message").isEqualTo("CatFact Service returned an empty response.")
     }
 }

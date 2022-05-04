@@ -27,13 +27,14 @@ class CatFactExtension : BeforeAllCallback {
     }
 
     fun givenACatFact(
-        catFact: String
-    ) {
+        catFact: String,
+        status: Int = 200
+    ) =
         server.stubFor(
             WireMock.get(WireMock.urlEqualTo("/fact"))
                 .willReturn(
                     WireMock.aResponse()
-                        .withStatus(200)
+                        .withStatus(status)
                         .withHeader("Content-Type", "application/json")
                         .withBody(
                             """{
@@ -45,5 +46,14 @@ class CatFactExtension : BeforeAllCallback {
         )
 
 
-    }
+    fun givenAnEmptyCatFactResponse() =
+        server.stubFor(
+            WireMock.get(WireMock.urlEqualTo("/fact"))
+                .willReturn(
+                    WireMock.aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("")
+                )
+        )
 }
